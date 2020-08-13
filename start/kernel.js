@@ -39,8 +39,10 @@ const globalMiddleware = [
 const namedMiddleware = {
   auth: 'Adonis/Middleware/Auth',
   guest: 'Adonis/Middleware/AllowGuestOnly',
-  entityId: 'App/Middleware/EntityProvider',
+  allow: 'App/Middleware/Allow',
   jwt: 'App/Middleware/Jwt',
+  entityId: 'App/Middleware/EntityProvider',
+  dependenciaId: 'App/Middleware/DependenciaProvider'
 }
 
 /*

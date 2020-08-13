@@ -16,11 +16,7 @@ class AppProvider {
     // configurar axios 
     await authentication.config(getClient(request));
     await authentication.config(getAuthorization(request));
-    // validar app
-    let { data } = await authentication.get(`app/me`);
-    if (!data.success) return response.send(data);
-    // inject app
-    request._app = data.app;
+    // add apis en el ctx;
     request.api_authentication = authentication;
     // call next to advance the request
     await next()
