@@ -8,7 +8,8 @@ const Tracking = use('App/Models/Tracking');
 const DependenciaExterior = use('App/Models/DependenciaExterior');
 const uid = require('uid')
 const Helpers = use('Helpers')
-const { LINK } = require('../../../../utils')
+const { LINK, URL } = require('../../../../utils')
+const collect = require('collect.js');
 
 class TramitePublicController {
 
@@ -142,6 +143,8 @@ class TramitePublicController {
             .catch(err => ({}));
         // add persona 
         tramite.person = person || {};
+        // generar url file
+        tramite.getUrlFile();
         // response
         return { 
             success: true,
@@ -165,14 +168,23 @@ class TramitePublicController {
             .paginate(page || 1, 20);
         // parse json 
         tracking = await tracking.toJSON();
+        let ids = collect(tracking.data).pluck('dependencia_destino_id').all().join('&ids[]='); 
         // obtener dependencia destino
-        let destino = await request.api_authentication.get(`dependencia`)
+        let destino = await request.api_authentication.get(`dependencia?ids[]=${ids}`)
             .then(res => res.data)
             .catch(err => ({
                 success: false,
                 status: err.status || 501,
                 dependencia: { }
             }));
+        // collect dependencia
+        destino = collect(destino.dependencia.data || []);
+        // add dependencia destino
+        tracking.data.map(tra => {
+            tra.dependencia_destino = destino.where('id', tra.dependencia_destino_id).first() || {};
+            tra.file = tra.file ? URL(tra.file) : null;
+            return tra;
+        });
         // response
         return { 
             success: true,
