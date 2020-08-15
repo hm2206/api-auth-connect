@@ -4,6 +4,7 @@
 const Model = use('Model')
 
 class Tracking extends Model {
+
 }
 
 module.exports = Tracking
