@@ -23,6 +23,9 @@ addGroup(Route.group(() => {
   Route.get('/public/tramite/:slug', 'public/TramitePublicController.show').middleware(['allow:public/TramitePublicController.show']);
   Route.get('/public/tramite/:slug/tracking', 'public/TramitePublicController.tracking').middleware(['allow:public/TramitePublicController.tracking']);
 
+  // Ruta public de Tip. Tramite
+  Route.get('/tramite_type', 'TramiteTypeController.index').middleware(['allow:TramiteTypeController.index']);
+
   // Ruta Publica de Dependencia
   Route.get('/public/dependencia/:entityId', 'public/DependenciaPublicController.show').middleware(['allow:public/DependenciaPublicController.show']);
 

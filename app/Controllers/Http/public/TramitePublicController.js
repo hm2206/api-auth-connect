@@ -22,8 +22,8 @@ class TramitePublicController {
             entity_id: 'required',
             dependencia_id: 'required',
             person_id: "required",
-            document_number: 'required|min:4|max:255',
             tramite_type_id: 'required|max:11',
+            document_number: 'required|min:4|max:255',
             folio_count: 'required|min:1|max:10',
             asunto: 'required|min:4'
         });
@@ -164,13 +164,14 @@ class TramitePublicController {
         let tracking = await Tracking.query()
             .join('tramites as tra', 'tra.id', 'trackings.tramite_id')
             .where('tra.slug', params.slug)
+            .whereIn('trackings.status', ['ACEPTADO', 'DERIVADO', 'RECHAZADO', 'FINALIZADO'])
             .select('trackings.*')
             .paginate(page || 1, 20);
         // parse json 
         tracking = await tracking.toJSON();
-        let ids = collect(tracking.data).pluck('dependencia_destino_id').all().join('&ids[]='); 
         // obtener dependencia destino
-        let destino = await request.api_authentication.get(`dependencia?ids[]=${ids}`)
+        let idDestinos = collect(tracking.data).pluck('dependencia_destino_id').all().join('&ids[]='); 
+        let destino = await request.api_authentication.get(`dependencia?ids[]=${idDestinos}`)
             .then(res => res.data)
             .catch(err => ({
                 success: false,

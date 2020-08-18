@@ -5,6 +5,7 @@ const { validation, ValidatorError, Storage } = require('validator-error-adonis'
 const { validate } = use('Validator');
 const uid = require('uid');
 const Helpers = use('Helpers');
+const { LINK } = require('../../../utils');
 
 class TrackingController {
 
@@ -15,8 +16,10 @@ class TrackingController {
     next = async ({ params, request }) => {
         // variable globales
         let tracking = null;
+        let file_tmp = await this._saveFile({ request });
         let file = null;
         let description = null;
+        let current = 0;
         let status = `${request.input('status')}`.toUpperCase();
         // status permitidos
         let allow_verification = ['DERIVADO', 'FINALIZADO', 'ANULADO'];
@@ -44,11 +47,15 @@ class TrackingController {
             // obtener tracking parent
             tracking = await this._getTracking({ params, request }, 1);
             payload.tramite_id = tracking.tramite_id;
+            payload.file = file_tmp;
             // derivar tracking
             if (status == 'DERIVADO') await this._derivar({ request, payload });
-            // add file y description
-            file = await this._saveFile({ request });
-            description = request.input('description');
+            else {
+                // add file y description
+                file = file_tmp;
+                description = request.input('description');
+                current = 1;
+            }
         } else if ( allow_validation.includes(status)) {
             // validar inputs
             await validation(validate, request.all(), {
@@ -61,15 +68,18 @@ class TrackingController {
             payload.dependencia_destino_id = request._dependencia.id;
             payload.parent = 1;
             // aceptar tracking
-            if (status == 'ACEPTADO') await this._nextTracking({ request, payload });
-            // add file y description
-            file = await this._saveFile({ request });
-            description = request.input('description');
+            if (status == 'ACEPTADO') await this._nextTracking({ payload });
+            else {
+                // add file y description
+                file = file_tmp;
+                description = request.input('description');
+                current = 1;
+            }
         } else throw new Error(`El status no está permitido (${allow_verification.join(", ")}, ${allow_validation.join(", ")})`);
         // actualizar status de tracking actual
         tracking.file = file;
+        tracking.current = current;
         tracking.description = description;
-        tracking.current = 0;
         tracking.status = status;
         await tracking.save();
         // response
@@ -121,15 +131,14 @@ class TrackingController {
             }
         });
         // response path file
-        return file.path || null;
+        return file.path ? LINK('tmp', file.path) : null;
     }
 
     /**
      * generar nuevo tracking
      * @param {*} param0 
      */
-    _nextTracking = async ({ request, payload }) => {
-        payload.file = await this._saveFile({ request });
+    _nextTracking = async ({ payload }) => {
         // save tracking
         await Tracking.create(payload);
     }
@@ -145,7 +154,7 @@ class TrackingController {
             if (request.input('user_destino_id') == request.$auth.id) throw new ValidatorError([{ field: 'user_destino_id', message: 'Usted no puede se el destinatario' }]);
         }
         // save next tracking
-        await this._nextTracking({ request, payload });
+        await this._nextTracking({ payload });
     }
 
 }
