@@ -28,7 +28,7 @@ class Allow {
       await next()
     } catch (error) {
       return response.send({
-        success: true,
+        success: false,
         status: error.status || 501,
         code: error.code || 'ERR_ALLOW',
         message: error.message
