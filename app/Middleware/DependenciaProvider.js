@@ -30,10 +30,8 @@ class DependenciaProvider {
       // call next to advance the request
       await next()
     } catch (error) {
-      console.log(error);
-      return response.send({
+      return response.status(error.status || 501).send({
         success: false,
-        status: error.status || 501,
         code: error.code || 'ERR_DEPENDENCIA',
         message: error.message || 'No se encontró la dependencia'
       });

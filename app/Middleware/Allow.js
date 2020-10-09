@@ -24,6 +24,8 @@ class Allow {
         }));
       // validar method app
       if (!success) throw new Error(message); 
+      // add app
+      request.$app = app;
       // call next to advance the request
       await next()
     } catch (error) {

@@ -17,9 +17,11 @@
   "private": true,
   "dependencies": {
     "@adonisjs/ace": "^5.0.8",
+    "@adonisjs/antl": "^2.0.7",
     "@adonisjs/auth": "^3.0.7",
     "@adonisjs/bodyparser": "^2.0.5",
     "@adonisjs/cors": "^1.0.7",
+    "@adonisjs/drive": "^1.0.4",
     "@adonisjs/fold": "^4.0.9",
     "@adonisjs/framework": "^5.0.9",
     "@adonisjs/ignitor": "^2.0.8",
@@ -30,12 +32,14 @@
     "moment": "^2.27.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
+    "node-signature": "^1.0.1",
+    "pfx-load": "^1.2.5",
     "random": "^2.2.0",
     "slugify": "^1.4.4",
     "strtotime": "^1.0.0",
     "uid": "^1.0.0",
     "validator-error": "^1.1.2",
-    "validator-error-adonis": "^1.0.5"
+    "validator-error-adonis": "^1.1.5"
   },
   "devDependencies": {},
   "autoload": {

@@ -28,7 +28,7 @@ class Jwt {
       // call next to advance the request
       await next()
     } catch (error) {
-      return response.send({
+      return response.status(error.status || 501).send({
         success: false,
         status: error.status || 501,
         code: error.code || 'ERR_AUTHORIZATION',
